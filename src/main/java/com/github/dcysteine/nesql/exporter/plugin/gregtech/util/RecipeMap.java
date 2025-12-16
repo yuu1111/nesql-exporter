@@ -3,7 +3,7 @@ package com.github.dcysteine.nesql.exporter.plugin.gregtech.util;
 import com.github.dcysteine.nesql.sql.base.recipe.Dimension;
 import gregtech.api.enums.ItemList;
 import gregtech.api.recipe.RecipeMaps;
-import net.minecraft.util.StatCollector;
+import gregtech.api.util.GTLanguageManager;
 
 /** Enum of supported GregTech recipe maps. */
 public enum RecipeMap {
@@ -610,7 +610,7 @@ public enum RecipeMap {
             Dimension itemOutputDimension, Dimension fluidOutputDimension) {
         this.recipeMap = recipeMap;
         this.shortName = shortName;
-        this.name = StatCollector.translateToLocal(recipeMap.unlocalizedName);
+        this.name = GTLanguageManager.getTranslation(recipeMap.unlocalizedName);
         this.icon = icon;
         this.shapeless = shapeless;
         this.itemInputDimension = itemInputDimension;
