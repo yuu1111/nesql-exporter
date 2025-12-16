@@ -1,75 +1,47 @@
 ## Not Enough SQL Exporter
 
-The exporter module for NESQL. The server module can be found
-[here](https://github.com/D-Cysteine/nesql-server). Still WIP.
+NESQL のエクスポーターモジュールです。サーバーモジュールは[こちら](https://github.com/D-Cysteine/nesql-server)にあります。現在も開発中です。
 
-The exported database is an
-[HSQLDB database](http://hsqldb.org/), and can also be queried directly with the
-HSQLDB client.
+エクスポートされるデータベースは [HSQLDB](http://hsqldb.org/) 形式で、HSQLDB クライアントで直接クエリを実行することも可能です。
 
-Currently supported exported data:
+現在サポートされているエクスポートデータ:
 
-* NEI item list
-* Forge ore dictionary
-* Forge fluids and fluid container data
-* Minecraft crafting table and furnace recipes
-* GTNH GT5 recipe maps
-* BetterQuesting quests
-* Thaumcraft aspects for items
+* NEI アイテムリスト
+* Forge 鉱石辞書
+* Forge 液体および液体コンテナデータ
+* Minecraft 作業台・かまどレシピ
+* GTNH GT5 レシピマップ
+* BetterQuesting クエスト
+* Thaumcraft アイテムアスペクト
 
-For GTNH, the exported database file is ~600 MB, and the export process takes my
-computer ~60 min. There are ~150k exported images, which take up a total of
-~90 MB raw; more on disk due to file overhead.
+GTNH の場合、エクスポートされるデータベースファイルは約 600 MB で、エクスポート処理には約 60 分かかります。エクスポートされる画像は約 15 万枚で、合計約 90 MB（ファイルオーバーヘッドによりディスク上ではそれ以上）になります。
 
-### Instructions
+### 使用方法
 
-1. Place `NESQL-Exporter-*.jar` and `NESQL-Exporter-*-deps.jar` into your
-   `mods/` folder. `NotEnoughItems` is the only required dependency.
-2. If you have `bugtorch-1.7.10-*.jar` in your `mods/` folder, move it somewhere
-   else temporarily, as it conflicts with rendering enchanted items. See below.
-3. Start Minecraft and join a world. It is recommended that you use a new
-   creative, single-player world for this. It is recommended to use a new world
-   because the exporter uses your current player state, so e.g. if you have
-   `Spice of Life` installed, tooltips will reflect which foods you have eaten.
-4. If you're using the GTNH version of `NotEnoughItems`, open your inventory and
-   view the NEI item list so that it gets loaded. If you forget to do this, some
-   items might not be exported.
-5. If you are exporting `Thaumcraft` data, it is recommended that you acquire
-   all `Thaumcraft` knowledge, as missing knowledge may cause some data not to
-   be exported properly. See below for detailed instructions.
-6. Run the command `/nesql`. You may optionally specify a repository name with
-   `/nesql your_repository_name`.
-7. You can now pause the game, and the export will continue while the game is
-   paused. Doing this can make things a little bit faster.
-8. Wait for the export process to finish. It can take a very long time depending
-   on how many mods you have installed. The exported database can be found in
-   `.minecraft/nesql`.
-9. Once the export is finished, you can delete the two mod jars. Remember to
-   replace `bugtorch-1.7.10-*.jar` if you moved it earlier.
+1. `NESQL-Exporter-*.jar` と `NESQL-Exporter-*-deps.jar` を `mods/` フォルダに配置します。必須の依存 Mod は `NotEnoughItems` のみです。
+2. `mods/` フォルダに `bugtorch-1.7.10-*.jar` がある場合は、エンチャントアイテムのレンダリングと競合するため、一時的に別の場所に移動してください。詳細は下記を参照。
+3. Minecraft を起動してワールドに参加します。新規のクリエイティブ・シングルプレイヤーワールドの使用を推奨します。エクスポーターは現在のプレイヤー状態を使用するため、例えば `Spice of Life` がインストールされている場合、ツールチップには食べた食べ物が反映されます。
+4. GTNH 版の `NotEnoughItems` を使用している場合は、インベントリを開いて NEI アイテムリストを表示し、読み込ませてください。これを忘れると、一部のアイテムがエクスポートされない場合があります。
+5. `Thaumcraft` データをエクスポートする場合は、すべての `Thaumcraft` 知識を取得することを推奨します。知識が不足していると、一部のデータが正しくエクスポートされない場合があります。詳細な手順は下記を参照。
+6. `/nesql` コマンドを実行します。オプションで `/nesql your_repository_name` のようにリポジトリ名を指定することもできます。
+7. ゲームを一時停止しても、エクスポートはバックグラウンドで継続されます。これにより処理が少し速くなる場合があります。
+8. エクスポート処理が完了するまで待ちます。インストールされている Mod の数によっては非常に長い時間がかかる場合があります。エクスポートされたデータベースは `.minecraft/nesql` にあります。
+9. エクスポートが完了したら、2つの mod jar を削除できます。先ほど `bugtorch-1.7.10-*.jar` を移動した場合は、元に戻すことを忘れないでください。
 
-You may see Forge complaining about a call to `System.exit()` in the logs.
-Please disregard it; this is due to one of Hibernate's libraries containing a
-call to `System.exit()`.
+ログに `System.exit()` の呼び出しに関する Forge の警告が表示される場合がありますが、これは Hibernate のライブラリの1つに `System.exit()` の呼び出しが含まれているためです。無視して問題ありません。
 
-### Enchanted item rendering issue
+### エンチャントアイテムのレンダリング問題
 
-If enchanted items (anything with that purple glint overlay) are showing up as
-blank images for you, then there is likely a conflict with the BugTorch mod.
+エンチャントアイテム（紫色の光沢オーバーレイがあるもの）が空白の画像として表示される場合、BugTorch Mod との競合が原因と考えられます。
 
-I believe that
-[this line](https://github.com/GTNewHorizons/BugTorch/blob/adec7fb0d48f499344cb9f4cf9c2f597b6ddb687/src/main/java/jss/bugtorch/mixins/minecraft/client/renderer/entity/MixinItemRenderer.java)
-is causing the problem, but it probably can't be fixed by NESQL Exporter since
-it is a mix-in. I recommend just temporarily removing BugTorch from your `mods/`
-folder until after export is complete.
+[この行](https://github.com/GTNewHorizons/BugTorch/blob/adec7fb0d48f499344cb9f4cf9c2f597b6ddb687/src/main/java/jss/bugtorch/mixins/minecraft/client/renderer/entity/MixinItemRenderer.java)が問題の原因と思われますが、Mixin であるため NESQL Exporter 側での修正は困難です。エクスポート完了まで `mods/` フォルダから BugTorch を一時的に削除することを推奨します。
 
-### Thaumcraft knowledge
+### Thaumcraft 知識
 
-If you are exporting `Thaumcraft` data, some data may not be exported properly
-if your character is missing `Thaumcraft` knowledge. It is recommended that you
-do the following to acquire all knowledge before exporting:
+`Thaumcraft` データをエクスポートする場合、キャラクターに `Thaumcraft` 知識が不足していると一部のデータが正しくエクスポートされない場合があります。エクスポート前に以下の手順ですべての知識を取得することを推奨します：
 
-1. Read the creative Thaumonomicon
-2. Run the following commands to purge all warp:
+1. クリエイティブ版ソーモノミコンを読む
+2. 以下のコマンドを実行してすべての歪みを削除：
    * `/tc warp @p set 0`
    * `/tc warp @p set 0 PERM`
    * `/tc warp @p set 0 TEMP`
