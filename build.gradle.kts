@@ -47,6 +47,9 @@ repositories {
     maven("https://cursemaven.com") {
         name = "Curse Maven"
     }
+    maven("https://api.modrinth.com/maven") {
+        name = "Modrinth Maven"
+    }
 
     /*
      * This repo seems to be broken...
