@@ -129,6 +129,18 @@ dependencies {
 
     val betterQuestingVersion: String by project
     implementation("com.github.GTNewHorizons:BetterQuesting:$betterQuestingVersion:dev")
+
+    val ae2Version: String by project
+    implementation("com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:$ae2Version:dev")
+
+    val bartworksVersion: String by project
+    implementation("com.github.GTNewHorizons:bartworks:$bartworksVersion:dev")
+
+    val bloodMagicVersion: String by project
+    implementation("com.github.GTNewHorizons:BloodMagic:$bloodMagicVersion:dev")
+
+    val logisticsPipesVersion: String by project
+    implementation("com.github.GTNewHorizons:LogisticsPipes:$logisticsPipesVersion:dev")
 }
 
 tasks.withType<JavaCompile> {

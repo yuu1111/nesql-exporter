@@ -48,26 +48,40 @@ public class GregTechRecipeProcessor extends PluginHelper {
                 try {
                     int voltage = recipe.mEUt / recipeMap.getAmperage();
                     Voltage voltageTier = Voltage.convertVoltage(voltage);
+                    if (voltageTier == null) {
+                        logger.warn(
+                                "Unknown voltage tier for voltage {} in recipe map {}",
+                                voltage, recipeMap.getName());
+                        continue;
+                    }
                     RecipeType recipeType = recipeTypeHandler.getRecipeType(recipeMap, voltageTier);
                     RecipeBuilder builder = new RecipeBuilder(exporter, recipeType);
                     // TODO if we want to avoid skipping slots, esp. output slots, add null checks.
-                    for (ItemStack input : recipe.mInputs) {
-                        builder.addItemGroupInput(GregTechUtil.reverseUnify(input));
-                    }
-                    for (FluidStack input : recipe.mFluidInputs) {
-                        builder.addFluidInput(input);
-                    }
-                    for (int i = 0; i < recipe.mOutputs.length; i++) {
-                        ItemStack output = recipe.mOutputs[i];
-                        int chance = recipe.getOutputChance(i);
-                        if (chance == 100_00) {
-                            builder.addItemOutput(output);
-                        } else {
-                            builder.addItemOutput(output, chance / 100_00d);
+                    if (recipe.mInputs != null) {
+                        for (ItemStack input : recipe.mInputs) {
+                            builder.addItemGroupInput(GregTechUtil.reverseUnify(input));
                         }
                     }
-                    for (FluidStack output : recipe.mFluidOutputs) {
-                        builder.addFluidOutput(output);
+                    if (recipe.mFluidInputs != null) {
+                        for (FluidStack input : recipe.mFluidInputs) {
+                            builder.addFluidInput(input);
+                        }
+                    }
+                    if (recipe.mOutputs != null) {
+                        for (int i = 0; i < recipe.mOutputs.length; i++) {
+                            ItemStack output = recipe.mOutputs[i];
+                            int chance = recipe.getOutputChance(i);
+                            if (chance == 100_00) {
+                                builder.addItemOutput(output);
+                            } else {
+                                builder.addItemOutput(output, chance / 100_00d);
+                            }
+                        }
+                    }
+                    if (recipe.mFluidOutputs != null) {
+                        for (FluidStack output : recipe.mFluidOutputs) {
+                            builder.addFluidOutput(output);
+                        }
                     }
 
                     List<ItemStack> specialItems = new ArrayList<>();
@@ -79,8 +93,9 @@ public class GregTechRecipeProcessor extends PluginHelper {
                     gregTechRecipeFactory.get(
                             recipeEntity, recipeMap, recipe, voltageTier, voltage, specialItems);
                 } catch (Exception e) {
-                    logger.error("Caught exception processing GregTech recipe!");
-                    e.printStackTrace();
+                    logger.error(
+                            "Caught exception processing GregTech recipe in {}: {}",
+                            recipeMap.getName(), recipe, e);
                 }
 
                 if (Logger.intermittentLog(count)) {

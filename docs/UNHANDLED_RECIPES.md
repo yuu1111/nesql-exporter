@@ -70,26 +70,51 @@ AE2の`ShapedRecipe`と`ShapelessRecipe`は標準の`IRecipe`を継承してい�
 ### BartWorks NBT依存レシピ
 
 Circuit Imprint（回路インプリント）関連のレシピ。NBTデータによって出力が変わる特殊なレシピ。
-GT5-Unofficial に依存として含まれている可能性あり。
+`BWNBTDependantCraftingRecipe`は`IRecipe`を直接実装しており、`getInput()`メソッドがないため
+リフレクションで内部フィールド（`shape`と`charToStackMap`）にアクセスして処理する。
+
+```java
+// リフレクションで取得するフィールド
+// String[] shape - 3x3クラフトグリッドのパターン
+// Map<Character, ItemStack> charToStackMap - パターン文字とアイテムのマッピング
+```
 
 ### Blood Magic レシピ
 
 Blood Orb（血のオーブ）を材料として使用するレシピ。
-Orb のティアによって動作が変わる特殊なレシピタイプ。
+`ShapedBloodOrbRecipe`と`ShapelessBloodOrbRecipe`は両方とも`getInput()`メソッドを持つため、
+標準的な方法で処理可能。
+
+```java
+// ShapedBloodOrbRecipe.getInput() -> Object[]
+// ShapelessBloodOrbRecipe.getInput() -> ArrayList<Object>
+```
 
 ### GTNH ShulkerNBTRecipe
 
 Et Futurum Requiem で追加されるシュルカーボックスの染色レシピ。
-NBTデータ（中身のアイテム）を保持したまま染色するための特殊レシピ。
+2,304件と大量だが、全て色違いのバリエーションであり、データベースに保存する価値が低いためスキップ。
+クラス名による判定（`ShulkerNBTRecipe`を含むかどうか）で識別。
+
+### Logistics Pipes レシピ
+
+`ShapelessResetRecipe`はアイテムのNBTデータをリセットするレシピ。
+`item`と`meta`フィールドにリフレクションでアクセスして入力アイテムを取得。
+
+```java
+// リフレクションで取得するフィールド
+// Item item - 対象アイテム
+// int meta - メタデータ
+```
 
 ## 実装ステータス
 
-- [ ] Applied Energistics 2 (`ShapedRecipe`, `ShapelessRecipe`)
-- [ ] BartWorks (`BWNBTDependantCraftingRecipe`)
-- [ ] Blood Magic (`ShapedBloodOrbRecipe`, `ShapelessBloodOrbRecipe`)
-- [ ] GTNH Et Futurum (`ShulkerNBTRecipe`)
-- [ ] Logistics Pipes (`ShapelessResetRecipe`)
-- [ ] その他
+- [x] Applied Energistics 2 (`ShapedRecipe`, `ShapelessRecipe`) - v0.5.3で実装
+- [x] BartWorks (`BWNBTDependantCraftingRecipe`) - v0.5.3で実装（リフレクション使用）
+- [x] Blood Magic (`ShapedBloodOrbRecipe`, `ShapelessBloodOrbRecipe`) - v0.5.3で実装
+- [x] GTNH Et Futurum (`ShulkerNBTRecipe`) - v0.5.3でスキップ対応（2,304件の染色レシピ）
+- [x] Logistics Pipes (`ShapelessResetRecipe`) - v0.5.3で実装（リフレクション使用）
+- [ ] その他（低優先度、合計28件）
 
 ## 備考
 

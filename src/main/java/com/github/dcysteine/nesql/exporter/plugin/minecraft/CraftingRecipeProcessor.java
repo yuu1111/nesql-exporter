@@ -1,11 +1,18 @@
 package com.github.dcysteine.nesql.exporter.plugin.minecraft;
 
+import WayofTime.alchemicalWizardry.api.items.ShapedBloodOrbRecipe;
+import WayofTime.alchemicalWizardry.api.items.ShapelessBloodOrbRecipe;
+import appeng.recipes.game.ShapedRecipe;
+import appeng.recipes.game.ShapelessRecipe;
+import bartworks.API.recipe.BWNBTDependantCraftingRecipe;
 import codechicken.nei.NEIServerUtils;
 import com.github.dcysteine.nesql.exporter.main.Logger;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.base.factory.RecipeBuilder;
 import com.github.dcysteine.nesql.sql.base.recipe.RecipeType;
+import logisticspipes.recipes.ShapelessResetRecipe;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
@@ -14,8 +21,12 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class CraftingRecipeProcessor extends PluginHelper {
     private final RecipeType shapedCrafting;
@@ -49,12 +60,33 @@ public class CraftingRecipeProcessor extends PluginHelper {
 
             if (recipe instanceof ShapedRecipes) {
                 processShapedRecipe((ShapedRecipes) recipe);
+            } else if (recipe instanceof ShapedRecipe) {
+                // AE2 ShapedRecipe
+                processAe2ShapedRecipe((ShapedRecipe) recipe);
             } else if (recipe instanceof ShapedOreRecipe) {
                 processShapedOreRecipe((ShapedOreRecipe) recipe);
             } else if (recipe instanceof ShapelessRecipes) {
                 processShapelessRecipe((ShapelessRecipes) recipe);
+            } else if (recipe instanceof ShapelessRecipe) {
+                // AE2 ShapelessRecipe
+                processAe2ShapelessRecipe((ShapelessRecipe) recipe);
             } else if (recipe instanceof ShapelessOreRecipe) {
                 processShapelessOreRecipe((ShapelessOreRecipe) recipe);
+            } else if (recipe instanceof BWNBTDependantCraftingRecipe) {
+                // BartWorks NBT-dependent recipe (Circuit Imprints, etc.)
+                processBartWorksNbtRecipe((BWNBTDependantCraftingRecipe) recipe);
+            } else if (recipe instanceof ShapedBloodOrbRecipe) {
+                // Blood Magic shaped recipe
+                processBloodMagicShapedRecipe((ShapedBloodOrbRecipe) recipe);
+            } else if (recipe instanceof ShapelessBloodOrbRecipe) {
+                // Blood Magic shapeless recipe
+                processBloodMagicShapelessRecipe((ShapelessBloodOrbRecipe) recipe);
+            } else if (recipe instanceof ShapelessResetRecipe) {
+                // Logistics Pipes reset recipe
+                processLogisticsPipesResetRecipe((ShapelessResetRecipe) recipe);
+            } else if (isShulkerNbtRecipe(recipe)) {
+                // GTNH Et Futurum shulker dyeing recipe - skip (2300+ variants of dye recipes)
+                // These are just shulker box color variants, not very useful to export
             } else {
                 logger.warn("Unhandled crafting recipe: {}", recipe);
             }
@@ -128,6 +160,73 @@ public class CraftingRecipeProcessor extends PluginHelper {
         builder.addItemOutput(recipe.getRecipeOutput()).build();
     }
 
+    private void processAe2ShapedRecipe(ShapedRecipe recipe) {
+        RecipeBuilder builder = new RecipeBuilder(exporter, shapedCrafting);
+        for (Object itemInput : recipe.getInput()) {
+            if (itemInput == null) {
+                builder.skipItemInput();
+                continue;
+            } else if (itemInput instanceof List && ((List<?>) itemInput).isEmpty()) {
+                builder.skipItemInput();
+                continue;
+            }
+
+            handleItemInput(builder, itemInput);
+        }
+        builder.addItemOutput(recipe.getRecipeOutput()).build();
+    }
+
+    private void processAe2ShapelessRecipe(ShapelessRecipe recipe) {
+        RecipeBuilder builder = new RecipeBuilder(exporter, shapelessCrafting);
+        for (Object itemInput : recipe.getInput()) {
+            if (itemInput instanceof List && ((List<?>) itemInput).isEmpty()) {
+                builder.skipItemInput();
+                continue;
+            }
+
+            handleItemInput(builder, itemInput);
+        }
+        builder.addItemOutput(recipe.getRecipeOutput()).build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void processBartWorksNbtRecipe(BWNBTDependantCraftingRecipe recipe) {
+        // BWNBTDependantCraftingRecipe implements IRecipe directly (not extending ShapedOreRecipe)
+        // We need to use reflection to access the internal fields: shape and charToStackMap
+        try {
+            Field shapeField = BWNBTDependantCraftingRecipe.class.getDeclaredField("shape");
+            Field charToStackMapField = BWNBTDependantCraftingRecipe.class.getDeclaredField("charToStackMap");
+            shapeField.setAccessible(true);
+            charToStackMapField.setAccessible(true);
+
+            String[] shape = (String[]) shapeField.get(recipe);
+            Map<Character, ItemStack> charToStackMap =
+                    (Map<Character, ItemStack>) charToStackMapField.get(recipe);
+
+            RecipeBuilder builder = new RecipeBuilder(exporter, shapedCrafting);
+
+            // Process each row of the 3x3 crafting grid
+            for (String row : shape) {
+                for (char c : row.toCharArray()) {
+                    if (c == ' ') {
+                        builder.skipItemInput();
+                    } else {
+                        ItemStack itemStack = charToStackMap.get(c);
+                        if (itemStack == null) {
+                            builder.skipItemInput();
+                        } else {
+                            handleItemInput(builder, itemStack);
+                        }
+                    }
+                }
+            }
+
+            builder.addItemOutput(recipe.getRecipeOutput()).build();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            logger.warn("Failed to process BartWorks NBT recipe via reflection: {}", recipe, e);
+        }
+    }
+
     private void handleItemInput(RecipeBuilder builder, Object itemInput) {
         ItemStack[] itemStacks = NEIServerUtils.extractRecipeItems(itemInput);
         if (itemStacks == null || itemStacks.length == 0) {
@@ -157,5 +256,65 @@ public class CraftingRecipeProcessor extends PluginHelper {
         }
 
         builder.addItemGroupInput(fixedItemStacks);
+    }
+
+    private void processBloodMagicShapedRecipe(ShapedBloodOrbRecipe recipe) {
+        RecipeBuilder builder = new RecipeBuilder(exporter, shapedCrafting);
+        for (Object itemInput : recipe.getInput()) {
+            if (itemInput == null) {
+                builder.skipItemInput();
+                continue;
+            } else if (itemInput instanceof List && ((List<?>) itemInput).isEmpty()) {
+                builder.skipItemInput();
+                continue;
+            }
+
+            handleItemInput(builder, itemInput);
+        }
+        builder.addItemOutput(recipe.getRecipeOutput()).build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void processBloodMagicShapelessRecipe(ShapelessBloodOrbRecipe recipe) {
+        RecipeBuilder builder = new RecipeBuilder(exporter, shapelessCrafting);
+        ArrayList<Object> inputs = recipe.getInput();
+        for (Object itemInput : inputs) {
+            if (itemInput instanceof List && ((List<?>) itemInput).isEmpty()) {
+                builder.skipItemInput();
+                continue;
+            }
+
+            handleItemInput(builder, itemInput);
+        }
+        builder.addItemOutput(recipe.getRecipeOutput()).build();
+    }
+
+    private void processLogisticsPipesResetRecipe(ShapelessResetRecipe recipe) {
+        // ShapelessResetRecipe is a simple recipe that takes one item and returns
+        // the same item with reset NBT data. We use reflection to get the item/meta.
+        try {
+            Field itemField = ShapelessResetRecipe.class.getDeclaredField("item");
+            Field metaField = ShapelessResetRecipe.class.getDeclaredField("meta");
+            itemField.setAccessible(true);
+            metaField.setAccessible(true);
+
+            Item item = (Item) itemField.get(recipe);
+            int meta = metaField.getInt(recipe);
+
+            ItemStack inputStack = new ItemStack(item, 1, meta);
+            RecipeBuilder builder = new RecipeBuilder(exporter, shapelessCrafting);
+            handleItemInput(builder, inputStack);
+            builder.addItemOutput(recipe.getRecipeOutput()).build();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            logger.warn("Failed to process Logistics Pipes reset recipe via reflection: {}", recipe, e);
+        }
+    }
+
+    /**
+     * Checks if the recipe is a GTNH ShulkerNBTRecipe (from Et Futurum Requiem scripts).
+     * We check by class name since NewHorizonsCoreMod is not a compile-time dependency.
+     */
+    private boolean isShulkerNbtRecipe(IRecipe recipe) {
+        return recipe.getClass().getName().contains("ShulkerNBTRecipe");
     }
 }
