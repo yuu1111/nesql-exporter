@@ -571,39 +571,6 @@ public enum RecipeMap {
             new Dimension(0, 0),
             new Dimension(1, 1)),
 
-    MULTIBLOCK_ELECTROLYZER(
-            RecipeMaps.electrolyzerNonCellRecipes,
-            "multiblockelectrolyzer",
-            // TODO use GT++ machine icon?
-            ItemList.Machine_IV_Electrolyzer,
-            true,
-            new Dimension(3, 2),
-            new Dimension(3, 2),
-            new Dimension(3, 2),
-            new Dimension(3, 2)),
-
-    MULTIBLOCK_CENTRIFUGE(
-            RecipeMaps.centrifugeNonCellRecipes,
-            "multiblockcentrifuge",
-            // TODO use GT++ machine icon?
-            ItemList.Machine_IV_Centrifuge,
-            true,
-            new Dimension(3, 2),
-            new Dimension(3, 2),
-            new Dimension(3, 2),
-            new Dimension(3, 2)),
-
-    MULTIBLOCK_MIXER(
-            RecipeMaps.mixerNonCellRecipes,
-            "multiblockmixer",
-            // TODO use GT++ machine icon?
-            ItemList.Machine_IV_Mixer,
-            true,
-            new Dimension(3, 3),
-            new Dimension(3, 2),
-            new Dimension(3, 3),
-            new Dimension(3, 2)),
-
     NANO_FORGE(
             RecipeMaps.nanoForgeRecipes,
             "nanoforge",
