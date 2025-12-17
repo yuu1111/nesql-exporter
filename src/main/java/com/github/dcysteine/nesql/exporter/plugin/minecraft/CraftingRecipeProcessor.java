@@ -226,6 +226,11 @@ public class CraftingRecipeProcessor extends PluginHelper {
     }
 
     private void handleItemInput(RecipeBuilder builder, Object itemInput) {
+        // レシピメタデータ (Integer/Character) はスキップ
+        if (itemInput instanceof Integer || itemInput instanceof Character) {
+            return;
+        }
+
         // AE2 IIngredient を処理
         if (itemInput instanceof IIngredient ingredient) {
             if (ingredient.isAir()) {
