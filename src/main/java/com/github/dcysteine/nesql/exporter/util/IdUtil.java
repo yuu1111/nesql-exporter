@@ -22,6 +22,9 @@ public final class IdUtil {
     public static final String ID_SEPARATOR = "~";
 
     public static String itemId(ItemStack itemStack) {
+        if (itemStack == null) {
+            return "unknown" + ID_SEPARATOR + "null_stack" + ID_SEPARATOR + "0";
+        }
         String id = itemId(itemStack.getItem());
         id += ID_SEPARATOR + itemStack.getItemDamage();
 
@@ -34,7 +37,14 @@ public final class IdUtil {
     }
 
     public static String itemId(Item item) {
+        if (item == null) {
+            return "unknown" + ID_SEPARATOR + "null_item";
+        }
         GameRegistry.UniqueIdentifier uniqueId = GameRegistry.findUniqueIdentifierFor(item);
+        if (uniqueId == null) {
+            // 未登録アイテムの場合はクラス名からIDを生成
+            return "unknown" + ID_SEPARATOR + sanitize(item.getClass().getSimpleName());
+        }
         return sanitize(uniqueId.modId + ID_SEPARATOR + uniqueId.name);
     }
 
