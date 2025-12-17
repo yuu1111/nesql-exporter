@@ -61,8 +61,8 @@ public final class Exporter {
      * <p>This is needed because exceptions thrown within threads only appear in logs.
      */
     public void exportReportException() {
-        // Bit of a hack, but if we're exporting upon client connect,
-        // then we need to wait for the player entity to become available.
+        // クライアント接続時にエクスポートする場合、プレイヤーエンティティが
+        // 利用可能になるまで待機する必要がある
         while (Minecraft.getMinecraft().thePlayer == null) {
             try {
                 Thread.sleep(1000L);
@@ -84,7 +84,7 @@ public final class Exporter {
                             + "Something went wrong during export! Please check your logs.");
             throw e;
         } finally {
-            // If we crash, stop rendering things.
+            // クラッシュ時はレンダリングを停止
             RenderDispatcher.INSTANCE.setRendererState(RenderDispatcher.RendererState.ERROR);
         }
     }
@@ -120,6 +120,9 @@ public final class Exporter {
             return;
         }
 
+        // エラーログファイルを初期化
+        Logger.initErrorLog(repositoryDirectory);
+
         Map<String, String> properties = new HashMap<>();
         properties.put("hibernate.connection.username", ConfigOptions.DATABASE_USER.get());
         properties.put("hibernate.connection.password", ConfigOptions.DATABASE_PASSWORD.get());
@@ -133,22 +136,40 @@ public final class Exporter {
                             "jdbc:postgresql://localhost:%d/%s",
                             ConfigOptions.POSTGRESQL_PORT.get(), repositoryName));
         } else {
-            // Append this to the path if we need cached tables.
-            // Note: this seems to 3x or 4x the time needed to export.
-            // This should drastically decrease NESQL server start-up time, at the cost of slightly
-            // increasing query time.
+            // キャッシュテーブルが必要な場合はパスに追加
+            // 注意: エクスポート時間が3〜4倍に増加する
+            // NESQLサーバーの起動時間は大幅に短縮されるが、クエリ時間は若干増加
             //+ ";hsqldb.default_table_type=CACHED"
             //
-            // Append this if we need to use lobs (this will set min lob size to 1KB).
+            // LOBが必要な場合は追加 (最小LOBサイズを1KBに設定)
             //+ ";hsqldb.lob_compressed=true;hsqldb.lob_file_scale=1"
             properties.put(
                     "hibernate.connection.url",
                     "jdbc:hsqldb:file:" + databaseFile.getAbsolutePath());
         }
 
-        EntityManagerFactory entityManagerFactory =
-                new HibernatePersistenceProvider()
-                        .createEntityManagerFactory("NESQL", properties);
+        EntityManagerFactory entityManagerFactory;
+        try {
+            entityManagerFactory =
+                    new HibernatePersistenceProvider()
+                            .createEntityManagerFactory("NESQL", properties);
+        } catch (Exception e) {
+            if (ConfigOptions.USE_POSTGRESQL.get()) {
+                Logger.chatMessage(
+                        EnumChatFormatting.RED
+                                + "Failed to connect to PostgreSQL at localhost:"
+                                + ConfigOptions.POSTGRESQL_PORT.get());
+                Logger.chatMessage(
+                        EnumChatFormatting.RED
+                                + "Please ensure PostgreSQL is running, or set use_postgresql=false in config.");
+            } else {
+                Logger.chatMessage(
+                        EnumChatFormatting.RED
+                                + "Failed to initialize database connection.");
+            }
+            e.printStackTrace();
+            return;
+        }
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         boolean renderingImages =
@@ -196,12 +217,12 @@ public final class Exporter {
         Logger.chatMessage(EnumChatFormatting.AQUA + "Committing database...");
         transaction.commit();
 
-        // SHUTDOWN is an HSQLDB command, so don't run it on PostgreSQL.
+        // SHUTDOWNはHSQLDBコマンドなのでPostgreSQLでは実行しない
         if (!ConfigOptions.USE_POSTGRESQL.get()) {
             Logger.chatMessage(EnumChatFormatting.AQUA + "Compacting database...");
             entityManager.getTransaction().begin();
             entityManager.createNativeQuery("SHUTDOWN COMPACT").executeUpdate();
-            // No need to commit the transaction; SHUTDOWN closes everything already.
+            // SHUTDOWNで全てクローズされるためトランザクションのコミットは不要
         }
 
         entityManager.close();
@@ -228,6 +249,17 @@ public final class Exporter {
                 e.printStackTrace();
             }
         }
+
+        // エラーログをクローズしてサマリーを報告
+        Logger.closeErrorLog();
+        if (Logger.getWarningCount() > 0 || Logger.getErrorCount() > 0) {
+            Logger.chatMessage(
+                    EnumChatFormatting.YELLOW
+                            + String.format(
+                                    "Export completed with %d warnings, %d errors. See export-errors.log",
+                                    Logger.getWarningCount(), Logger.getErrorCount()));
+        }
+
         Logger.chatMessage(EnumChatFormatting.AQUA + "Export complete!");
     }
 }
