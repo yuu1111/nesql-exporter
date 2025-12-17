@@ -15,7 +15,9 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.relauncher.Side;
 
-/** Main entry point for Not Enough SQL Exporter. */
+/**
+ * NESQL Exporterのメインエントリーポイント
+ */
 @Mod(
         modid = Main.MOD_ID,
         name = Main.MOD_NAME,
@@ -24,15 +26,38 @@ import cpw.mods.fml.relauncher.Side;
         dependencies = Main.MOD_DEPENDENCIES,
         guiFactory = ConfigGuiFactory.CLASS_NAME)
 public final class Main {
+    /**
+     * Mod ID
+     */
     public static final String MOD_ID = "nesql-exporter";
+
+    /**
+     * Mod名
+     */
     public static final String MOD_NAME = "Not Enough SQL Exporter";
+
+    /**
+     * Modバージョン
+     */
     public static final String MOD_VERSION = Tags.EXPORTER_VERSION;
+
+    /**
+     * Mod依存関係
+     */
     public static final String MOD_DEPENDENCIES = "required-after:NotEnoughItems;";
 
+    /**
+     * Modインスタンス
+     */
     @Instance(MOD_ID)
     @SuppressWarnings("unused")
     public static Main instance;
 
+    /**
+     * Mod初期化時に呼ばれる
+     *
+     * @param event 初期化イベント
+     */
     @EventHandler
     @SuppressWarnings("unused")
     public void onInitialization(FMLInitializationEvent event) {
@@ -50,6 +75,12 @@ public final class Main {
         Log.MOD.info("Mod initialization complete!");
     }
 
+    /**
+     * サーバー起動時に呼ばれる
+     * コマンドを登録する
+     *
+     * @param event サーバー起動イベント
+     */
     @EventHandler
     @SuppressWarnings("unused")
     public void onServerStart(FMLServerStartingEvent event) {
@@ -62,6 +93,12 @@ public final class Main {
         Log.MOD.info("Commands registered!");
     }
 
+    /**
+     * クライアントがサーバーに接続した時に呼ばれる
+     * 設定が有効な場合は自動エクスポートを実行する
+     *
+     * @param event 接続イベント
+     */
     @SubscribeEvent
     @SuppressWarnings("unused")
     public void onClientConnected(FMLNetworkEvent.ClientConnectedToServerEvent event) {

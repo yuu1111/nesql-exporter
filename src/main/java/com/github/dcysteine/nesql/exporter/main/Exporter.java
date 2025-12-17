@@ -27,23 +27,38 @@ import java.nio.file.FileSystems;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Exports recipes and other data to a file. */
+/**
+ * レシピやその他データをファイルにエクスポートする
+ */
 public final class Exporter {
     private static final String REPOSITORY_PATH_FORMAT_STRING = "nesql" + File.separator + "%s";
     private static final String DATABASE_FILE_PATH = "nesql-db";
     private static final String IMAGE_ZIP_PATH = "image.zip";
 
-    /** If true, existing repositories will be deleted and overwritten. */
+    /**
+     * trueの場合、既存リポジトリを削除して上書きする
+     */
     private final boolean overwrite;
     private final String repositoryName;
     private final File repositoryDirectory;
     private final File databaseFile;
     private final File imageZipFile;
 
+    /**
+     * デフォルトのリポジトリ名でExporterを生成する
+     *
+     * @param overwrite 上書きフラグ
+     */
     public Exporter(boolean overwrite) {
         this(overwrite, ConfigOptions.REPOSITORY_NAME.get());
     }
 
+    /**
+     * 指定したリポジトリ名でExporterを生成する
+     *
+     * @param overwrite 上書きフラグ
+     * @param repositoryName リポジトリ名
+     */
     public Exporter(boolean overwrite, String repositoryName) {
         this.overwrite = overwrite;
         this.repositoryName = repositoryName;
@@ -56,9 +71,8 @@ public final class Exporter {
     }
 
     /**
-     * Wrapper for {@link #export()} which will report exceptions to chat.
-     *
-     * <p>This is needed because exceptions thrown within threads only appear in logs.
+     * {@link #export()} のラッパー、例外をチャットに報告する
+     * スレッド内で投げられた例外はログにしか出ないため必要
      */
     public void exportReportException() {
         // クライアント接続時にエクスポートする場合、プレイヤーエンティティが
