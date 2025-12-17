@@ -40,12 +40,17 @@ public final class IdUtil {
         if (item == null) {
             return "unknown" + ID_SEPARATOR + "null_item";
         }
-        GameRegistry.UniqueIdentifier uniqueId = GameRegistry.findUniqueIdentifierFor(item);
-        if (uniqueId == null) {
-            // 未登録アイテムの場合はクラス名からIDを生成
+        try {
+            GameRegistry.UniqueIdentifier uniqueId = GameRegistry.findUniqueIdentifierFor(item);
+            if (uniqueId == null) {
+                // 未登録アイテムの場合はクラス名からIDを生成
+                return "unknown" + ID_SEPARATOR + sanitize(item.getClass().getSimpleName());
+            }
+            return sanitize(uniqueId.modId + ID_SEPARATOR + uniqueId.name);
+        } catch (Exception e) {
+            // findUniqueIdentifierFor内部でNPEが発生する場合がある
             return "unknown" + ID_SEPARATOR + sanitize(item.getClass().getSimpleName());
         }
-        return sanitize(uniqueId.modId + ID_SEPARATOR + uniqueId.name);
     }
 
     public static String imageFilePath(ItemStack itemStack) {
