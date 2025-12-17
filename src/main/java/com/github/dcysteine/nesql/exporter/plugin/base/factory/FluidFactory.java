@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.plugin.base.factory;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.main.config.ConfigOptions;
 import com.github.dcysteine.nesql.exporter.plugin.EntityFactory;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
@@ -60,7 +60,7 @@ public class FluidFactory extends EntityFactory<Fluid, String> {
             logger.error("Found fluid with null icon: {}", fluid.getLocalizedName());
         } else {
             if (ConfigOptions.RENDER_ICONS.get()) {
-                Logger.intermittentLog(
+                Log.intermittentLog(
                         logger,
                         "Enqueueing render of fluid #{}: " + fluid.getLocalizedName(),
                         exporterState.incrementFluidCount());

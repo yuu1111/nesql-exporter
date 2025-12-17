@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.main.config;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import net.minecraftforge.common.config.Configuration;
 
@@ -31,7 +31,7 @@ public final class Config {
             }
         } else if (CONFIG.hasChanged()) {
             CONFIG.save();
-            Logger.MOD.warn("Found changed config options! Config file has been updated.");
+            Log.MOD.warn("Found changed config options! Config file has been updated.");
         }
     }
 

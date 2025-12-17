@@ -2,7 +2,7 @@ package com.github.dcysteine.nesql.exporter.render;
 
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.guihook.GuiContainerManager;
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.main.config.ConfigOptions;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -152,8 +152,8 @@ public enum Renderer {
             return;
         }
 
-        if (Logger.intermittentLog(++loggingCounter)) {
-            Logger.MOD.info("Remaining render jobs: {}", RenderDispatcher.INSTANCE.getJobCount());
+        if (Log.intermittentLog(++loggingCounter)) {
+            Log.MOD.info("Remaining render jobs: {}", RenderDispatcher.INSTANCE.getJobCount());
             loggingCounter = 0;
         }
 
@@ -223,7 +223,7 @@ public enum Renderer {
                 if (!entityOptional.isPresent()) {
                     // This shouldn't ever happen,
                     // because we already check for null entity before enqueueing the render job.
-                    Logger.MOD.error("Could not create entity: {}", job);
+                    Log.MOD.error("Could not create entity: {}", job);
                     break;
                 }
 

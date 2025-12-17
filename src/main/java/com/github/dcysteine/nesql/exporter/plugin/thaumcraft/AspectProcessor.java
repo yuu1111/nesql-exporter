@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.plugin.thaumcraft;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.thaumcraft.factory.AspectFactory;
@@ -25,7 +25,7 @@ public class AspectProcessor extends PluginHelper {
             count++;
             aspectFactory.get(aspect);
 
-            if (Logger.intermittentLog(count)) {
+            if (Log.intermittentLog(count)) {
                 logger.info("Processed aspect {} of {}", count, total);
                 logger.info("Most recent aspect: {}", aspect.getName());
             }

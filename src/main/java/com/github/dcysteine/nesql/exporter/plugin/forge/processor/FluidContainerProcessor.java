@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.plugin.forge.processor;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.forge.factory.FluidContainerFactory;
@@ -23,7 +23,7 @@ public class FluidContainerProcessor extends PluginHelper {
             count++;
             fluidContainerFactory.get(datum);
 
-            if (Logger.intermittentLog(count)) {
+            if (Log.intermittentLog(count)) {
                 logger.info("Processed Forge fluid container datum {} of {}", count, total);
                 logger.info("Most recent container: {}", datum.filledContainer.getDisplayName());
             }

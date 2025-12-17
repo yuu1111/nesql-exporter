@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.plugin;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.sql.base.item.Item;
 import jakarta.persistence.EntityManager;
 import net.minecraft.item.ItemStack;
@@ -50,10 +50,10 @@ public class ExporterState {
      * <p>See <a href="https://en.wikibooks.org/wiki/Java_Persistence/Persisting#Flush">here</a>.
      */
     public void flushEntityManager() {
-        Logger.MOD.info("Flushing entity manager state; this may take a while!");
+        Log.MOD.info("Flushing entity manager state; this may take a while!");
         entityManager.flush();
         entityManager.clear();
-        Logger.MOD.info("Flush complete.");
+        Log.MOD.info("Flush complete.");
     }
 
     public int incrementItemCount() {

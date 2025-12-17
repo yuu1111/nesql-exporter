@@ -1,7 +1,7 @@
 package com.github.dcysteine.nesql.exporter.plugin.base.factory;
 
 import com.github.dcysteine.nesql.exporter.common.MobSpec;
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.main.config.ConfigOptions;
 import com.github.dcysteine.nesql.exporter.plugin.EntityFactory;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
@@ -104,7 +104,7 @@ public class MobFactory extends EntityFactory<Mob, String> {
         }
 
         if (entityOptional.isPresent() && ConfigOptions.RENDER_MOBS.get()) {
-            Logger.intermittentLog(
+            Log.intermittentLog(
                     logger,
                     "Enqueueing render of mob #{}: " + spec.getFullName(),
                     exporterState.incrementMobCount());

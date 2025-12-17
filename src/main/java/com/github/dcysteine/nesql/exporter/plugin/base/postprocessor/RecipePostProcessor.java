@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.plugin.base.postprocessor;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.util.QueryUtil;
@@ -38,7 +38,7 @@ public class RecipePostProcessor extends PluginHelper {
                             .map(FluidStack::getFluid)
                             .forEach(recipe::addFluidInputsFluid);
 
-                    if (Logger.intermittentLog(count.incrementAndGet())) {
+                    if (Log.intermittentLog(count.incrementAndGet())) {
                         logger.info("Post-processed recipe {} of {}", count.get(), total);
                         logger.info("Most recent recipe: {}", recipe.getId());
                     }

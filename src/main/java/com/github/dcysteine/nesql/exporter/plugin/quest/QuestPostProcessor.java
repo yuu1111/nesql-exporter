@@ -2,7 +2,7 @@ package com.github.dcysteine.nesql.exporter.plugin.quest;
 
 import betterquesting.api.questing.IQuest;
 import betterquesting.questing.QuestDatabase;
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.quest.factory.QuestFactory;
@@ -30,7 +30,7 @@ public class QuestPostProcessor extends PluginHelper {
             Quest quest = questFactory.findQuest(entry.getKey());
             questFactory.setRequiredQuests(quest, entry.getValue().getRequirements());
 
-            if (Logger.intermittentLog(count)) {
+            if (Log.intermittentLog(count)) {
                 logger.info("Post-processed quest {} of {}", count, total);
                 logger.info("Most recent quest: {}", quest.getName());
             }

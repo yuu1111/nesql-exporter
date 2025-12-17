@@ -1,7 +1,7 @@
 package com.github.dcysteine.nesql.exporter.plugin.minecraft;
 
 import com.github.dcysteine.nesql.exporter.common.MobSpec;
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.base.factory.MobFactory;
@@ -33,7 +33,7 @@ public class EntityProcessor extends PluginHelper {
                 mobFactory.get(MobSpec.create(entityName));
             }
 
-            if (Logger.intermittentLog(count)) {
+            if (Log.intermittentLog(count)) {
                 logger.info("Processed entity {} of {}", count, total);
                 logger.info("Most recent entity: {}", entityName);
             }

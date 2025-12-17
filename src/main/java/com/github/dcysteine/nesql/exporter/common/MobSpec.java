@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.common;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.google.auto.value.AutoValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -54,14 +54,14 @@ public abstract class MobSpec {
             Entity entity =
                     EntityList.createEntityByName(getFullName(), Minecraft.getMinecraft().theWorld);
             if (entity == null) {
-                Logger.MOD.warn("Got null while creating entity: {}", this);
+                Log.MOD.warn("Got null while creating entity: {}", this);
                 return Optional.empty();
             }
 
             getNbt().ifPresent(entity::readFromNBT);
             return Optional.of(entity);
         } catch (Exception e) {
-            Logger.MOD.error("Caught exception while creating entity: {}", this);
+            Log.MOD.error("Caught exception while creating entity: {}", this);
             e.printStackTrace();
 
             return Optional.empty();

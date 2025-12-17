@@ -1,7 +1,7 @@
 package com.github.dcysteine.nesql.exporter.plugin.avaritia;
 
 import codechicken.nei.NEIServerUtils;
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.base.factory.RecipeBuilder;
@@ -44,7 +44,7 @@ public class CompressorRecipeProcessor extends PluginHelper {
 
             builder.addItemOutput(recipe.getOutput()).build();
 
-            if (Logger.intermittentLog(count)) {
+            if (Log.intermittentLog(count)) {
                 logger.info("Processed Avaritia compressor recipe {} of {}", count, total);
                 logger.info("Most recent recipe: {}", recipe.getOutput().getDisplayName());
             }

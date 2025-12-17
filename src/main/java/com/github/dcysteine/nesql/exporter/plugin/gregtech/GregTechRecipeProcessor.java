@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.plugin.gregtech;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.base.factory.RecipeBuilder;
@@ -98,7 +98,7 @@ public class GregTechRecipeProcessor extends PluginHelper {
                             recipeMap.getName(), recipe, e);
                 }
 
-                if (Logger.intermittentLog(count)) {
+                if (Log.intermittentLog(count)) {
                     logger.info(
                             "Processed GregTech {} recipe {} of {}",
                             recipeMap.getName(), count, total);

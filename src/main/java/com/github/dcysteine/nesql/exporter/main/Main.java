@@ -39,7 +39,7 @@ public final class Main {
         if (event.getSide() != Side.CLIENT) {
             return;
         }
-        Logger.MOD.info("Mod initialization starting...");
+        Log.MOD.info("Mod initialization starting...");
 
         ConfigGuiFactory.checkClassName();
         Config.initialize();
@@ -47,7 +47,7 @@ public final class Main {
         FMLCommonHandler.instance().bus().register(Renderer.INSTANCE);
         FMLCommonHandler.instance().bus().register(this);
 
-        Logger.MOD.info("Mod initialization complete!");
+        Log.MOD.info("Mod initialization complete!");
     }
 
     @EventHandler
@@ -59,14 +59,14 @@ public final class Main {
 
         event.registerServerCommand(new ExportCommand());
         event.registerServerCommand(new ExportOverwriteCommand());
-        Logger.MOD.info("Commands registered!");
+        Log.MOD.info("Commands registered!");
     }
 
     @SubscribeEvent
     @SuppressWarnings("unused")
     public void onClientConnected(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         if (ConfigOptions.AUTO_EXPORT_ON_CONNECT.get()) {
-            Logger.MOD.info("Automatically exporting...");
+            Log.MOD.info("Automatically exporting...");
             new Thread(new Exporter(false)::exportReportException).start();
         }
     }

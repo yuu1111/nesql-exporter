@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.plugin.base.postprocessor;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.base.factory.ItemGroupFactory;
@@ -33,7 +33,7 @@ public class ItemGroupPostProcessor extends PluginHelper {
                                     .collect(Collectors.toCollection(HashSet::new));
                     itemGroup.setBaseItemGroup(itemGroupFactory.get(baseItemStacks));
 
-                    if (Logger.intermittentLog(count.incrementAndGet())) {
+                    if (Log.intermittentLog(count.incrementAndGet())) {
                         logger.info("Post-processed item group {} of {}", count.get(), total);
                         logger.info("Most recent item group: {}", itemGroup.getId());
                     }

@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.plugin.base.factory;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.main.config.ConfigOptions;
 import com.github.dcysteine.nesql.exporter.plugin.EntityFactory;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
@@ -100,7 +100,7 @@ public class ItemFactory extends EntityFactory<Item, String> {
         }
 
         if (ConfigOptions.RENDER_ICONS.get()) {
-            Logger.intermittentLog(
+            Log.intermittentLog(
                     logger,
                     "Enqueueing render of item #{}: " + item.getLocalizedName(),
                     exporterState.incrementItemCount());

@@ -7,7 +7,7 @@ import appeng.recipes.game.ShapedRecipe;
 import appeng.recipes.game.ShapelessRecipe;
 import bartworks.API.recipe.BWNBTDependantCraftingRecipe;
 import codechicken.nei.NEIServerUtils;
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.base.factory.RecipeBuilder;
@@ -55,7 +55,7 @@ public class CraftingRecipeProcessor extends PluginHelper {
             count++;
 
             if (recipe.getRecipeOutput() == null) {
-                Logger.warn(logger, "Skipping crafting recipe with null output: {}", recipe);
+                Log.warn(logger, "Skipping crafting recipe with null output: {}", recipe);
                 continue;
             }
 
@@ -89,10 +89,10 @@ public class CraftingRecipeProcessor extends PluginHelper {
                 // GTNH Et Futurum shulker dyeing recipe - skip (2300+ variants of dye recipes)
                 // These are just shulker box color variants, not very useful to export
             } else {
-                Logger.warn(logger, "Unhandled crafting recipe: {}", recipe);
+                Log.warn(logger, "Unhandled crafting recipe: {}", recipe);
             }
 
-            if (Logger.intermittentLog(count)) {
+            if (Log.intermittentLog(count)) {
                 logger.info("Processed crafting recipe {} of {}", count, total);
                 logger.info(
                         "Most recent recipe: {}", recipe.getRecipeOutput().getDisplayName());
@@ -123,7 +123,7 @@ public class CraftingRecipeProcessor extends PluginHelper {
                 builder.skipItemInput();
                 continue;
             } else if (itemInput instanceof List && ((List<?>) itemInput).isEmpty()) {
-                Logger.warn(logger, "Shaped ore crafting recipe with empty list ingredient: {}", recipe);
+                Log.warn(logger, "Shaped ore crafting recipe with empty list ingredient: {}", recipe);
                 builder.skipItemInput();
                 continue;
             }
@@ -136,7 +136,7 @@ public class CraftingRecipeProcessor extends PluginHelper {
     private void processShapelessRecipe(ShapelessRecipes recipe) {
         // Apparently this actually happens? At least, according to a comment in NEI source.
         if (recipe.recipeItems == null) {
-            Logger.warn(logger, "Crafting recipe with null inputs: {}", recipe);
+            Log.warn(logger, "Crafting recipe with null inputs: {}", recipe);
             return;
         }
 
@@ -151,7 +151,7 @@ public class CraftingRecipeProcessor extends PluginHelper {
         RecipeBuilder builder = new RecipeBuilder(exporter, shapelessCrafting);
         for (Object itemInput : recipe.getInput()) {
             if (itemInput instanceof List && ((List<?>) itemInput).isEmpty()) {
-                Logger.warn(logger, "Shapeless ore crafting recipe with empty list ingredient: {}", recipe);
+                Log.warn(logger, "Shapeless ore crafting recipe with empty list ingredient: {}", recipe);
                 builder.skipItemInput();
                 continue;
             }
@@ -221,7 +221,7 @@ public class CraftingRecipeProcessor extends PluginHelper {
 
             builder.addItemOutput(recipe.getRecipeOutput()).build();
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            Logger.warn(logger, "Failed to process BartWorks NBT recipe via reflection: {}", recipe, e);
+            Log.warn(logger, "Failed to process BartWorks NBT recipe via reflection: {}", recipe, e);
         }
     }
 
@@ -245,7 +245,7 @@ public class CraftingRecipeProcessor extends PluginHelper {
                     builder.skipItemInput();
                 }
             } catch (Exception e) {
-                Logger.warn(logger, "Failed to get ItemStack from AE2 IIngredient: {}", itemInput);
+                Log.warn(logger, "Failed to get ItemStack from AE2 IIngredient: {}", itemInput);
                 builder.skipItemInput();
             }
             return;
@@ -275,7 +275,7 @@ public class CraftingRecipeProcessor extends PluginHelper {
         }
 
         if (foundBadStackSize) {
-            Logger.warn(logger, "Crafting recipe with bad stack size: {}", Arrays.toString(itemStacks));
+            Log.warn(logger, "Crafting recipe with bad stack size: {}", Arrays.toString(itemStacks));
         }
 
         builder.addItemGroupInput(fixedItemStacks);
@@ -332,7 +332,7 @@ public class CraftingRecipeProcessor extends PluginHelper {
             handleItemInput(builder, inputStack);
             builder.addItemOutput(recipe.getRecipeOutput()).build();
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            Logger.warn(logger, "Failed to process Logistics Pipes reset recipe via reflection: {}", recipe, e);
+            Log.warn(logger, "Failed to process Logistics Pipes reset recipe via reflection: {}", recipe, e);
         }
     }
 

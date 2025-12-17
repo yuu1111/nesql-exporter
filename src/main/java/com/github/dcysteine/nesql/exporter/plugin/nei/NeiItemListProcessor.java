@@ -1,7 +1,7 @@
 package com.github.dcysteine.nesql.exporter.plugin.nei;
 
 import codechicken.nei.ItemList;
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.base.factory.ItemFactory;
@@ -31,7 +31,7 @@ public class NeiItemListProcessor extends PluginHelper {
                 e.printStackTrace();
             }
 
-            if (Logger.intermittentLog(count)) {
+            if (Log.intermittentLog(count)) {
                 logger.info("Processed NEI item {} of {}", count, total);
                 logger.info("Most recent item: {}", itemStack.getDisplayName());
             }

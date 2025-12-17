@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.plugin;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.sql.Plugin;
 
 /** Abstract class which helps with setting up and passing around state variables. */
@@ -11,7 +11,7 @@ public abstract class PluginExporter {
 
     public PluginExporter(Plugin plugin, ExporterState exporterState) {
         this.plugin = plugin;
-        this.logger = Logger.getLogger(plugin);
+        this.logger = Log.getLogger(plugin);
         this.exporterState = exporterState;
     }
 

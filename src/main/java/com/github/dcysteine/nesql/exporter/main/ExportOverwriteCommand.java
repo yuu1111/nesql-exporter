@@ -26,7 +26,7 @@ final class ExportOverwriteCommand implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length > 1) {
-            Logger.chatMessage("Too many parameters! Usage: " + getCommandUsage(sender));
+            Log.chatMessage("Too many parameters! Usage: " + getCommandUsage(sender));
             return;
         }
 

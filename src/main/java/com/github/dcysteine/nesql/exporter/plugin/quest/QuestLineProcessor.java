@@ -2,7 +2,7 @@ package com.github.dcysteine.nesql.exporter.plugin.quest;
 
 import betterquesting.api.questing.IQuestLine;
 import betterquesting.questing.QuestLineDatabase;
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.quest.factory.QuestLineFactory;
@@ -29,7 +29,7 @@ public class QuestLineProcessor extends PluginHelper {
             count++;
             QuestLine questLine = questLineFactory.get(entry.getKey(), entry.getValue());
 
-            if (Logger.intermittentLog(count)) {
+            if (Log.intermittentLog(count)) {
                 logger.info("Processed quest line {} of {}", count, total);
                 logger.info("Most recent quest line: {}", questLine.getName());
             }

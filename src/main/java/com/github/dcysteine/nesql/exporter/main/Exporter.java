@@ -71,7 +71,7 @@ public final class Exporter {
 
         if (ConfigOptions.ENABLED_PLUGINS.get().contains(Plugin.NEI.getName())
                 && ItemList.items.isEmpty()) {
-            Logger.chatMessage(
+            Log.chatMessage(
                     EnumChatFormatting.RED + "NEI item list is empty! Please load it, and retry.");
             return;
         }
@@ -79,7 +79,7 @@ public final class Exporter {
         try {
             export();
         } catch (Exception e) {
-            Logger.chatMessage(
+            Log.chatMessage(
                     EnumChatFormatting.RED
                             + "Something went wrong during export! Please check your logs.");
             throw e;
@@ -90,38 +90,38 @@ public final class Exporter {
     }
 
     private void export() {
-        Logger.chatMessage(EnumChatFormatting.AQUA + "Exporting data to:");
-        Logger.chatMessage(repositoryDirectory.getAbsolutePath());
+        Log.chatMessage(EnumChatFormatting.AQUA + "Exporting data to:");
+        Log.chatMessage(repositoryDirectory.getAbsolutePath());
 
         if (repositoryDirectory.exists()) {
             if (overwrite) {
-                Logger.chatMessage(
+                Log.chatMessage(
                         EnumChatFormatting.YELLOW + String.format(
                                 "Repository \"%s\" already exists; deleting...", repositoryName));
                 try {
                     FileUtils.deleteDirectory(repositoryDirectory);
                 } catch (IOException e) {
-                    Logger.chatMessage(
+                    Log.chatMessage(
                             EnumChatFormatting.RED + String.format(
                                     "Could not delete repository \"%s\"!", repositoryName));
                     throw new RuntimeException(e);
                 }
             } else {
-                Logger.chatMessage(
+                Log.chatMessage(
                         EnumChatFormatting.RED + String.format(
                                 "Cannot create repository \"%s\"; it already exists!", repositoryName));
                 return;
             }
         }
         if (!repositoryDirectory.mkdirs()) {
-            Logger.chatMessage(
+            Log.chatMessage(
                     EnumChatFormatting.RED
                             + String.format("Failed to create repository \"%s\"!", repositoryName));
             return;
         }
 
         // エラーログファイルを初期化
-        Logger.initErrorLog(repositoryDirectory);
+        Log.initErrorLog(repositoryDirectory);
 
         Map<String, String> properties = new HashMap<>();
         properties.put("hibernate.connection.username", ConfigOptions.DATABASE_USER.get());
@@ -155,15 +155,15 @@ public final class Exporter {
                             .createEntityManagerFactory("NESQL", properties);
         } catch (Exception e) {
             if (ConfigOptions.USE_POSTGRESQL.get()) {
-                Logger.chatMessage(
+                Log.chatMessage(
                         EnumChatFormatting.RED
                                 + "Failed to connect to PostgreSQL at localhost:"
                                 + ConfigOptions.POSTGRESQL_PORT.get());
-                Logger.chatMessage(
+                Log.chatMessage(
                         EnumChatFormatting.RED
                                 + "Please ensure PostgreSQL is running, or set use_postgresql=false in config.");
             } else {
-                Logger.chatMessage(
+                Log.chatMessage(
                         EnumChatFormatting.RED
                                 + "Failed to initialize database connection.");
             }
@@ -176,14 +176,14 @@ public final class Exporter {
                 ConfigOptions.RENDER_ICONS.get() || ConfigOptions.RENDER_MOBS.get();
         FileSystem imageZipFileSystem = null;
         if (renderingImages) {
-            Logger.chatMessage(EnumChatFormatting.AQUA + "Initializing renderer.");
+            Log.chatMessage(EnumChatFormatting.AQUA + "Initializing renderer.");
 
             URI uri = URI.create("jar:" + imageZipFile.toURI());
             Map<String, String> env = ImmutableMap.of("create", "true");
             try {
                 imageZipFileSystem = FileSystems.newFileSystem(uri, env);
             } catch (IOException e) {
-                Logger.chatMessage(
+                Log.chatMessage(
                         EnumChatFormatting.RED
                                 + String.format(
                                         "Failed to create image zip file:\n%s",
@@ -196,14 +196,14 @@ public final class Exporter {
             RenderDispatcher.INSTANCE.setRendererState(RenderDispatcher.RendererState.INITIALIZING);
         }
 
-        Logger.chatMessage(EnumChatFormatting.AQUA + "Initializing plugins.");
+        Log.chatMessage(EnumChatFormatting.AQUA + "Initializing plugins.");
         ExporterState exporterState = new ExporterState(entityManager);
         PluginRegistry registry = new PluginRegistry();
         Map<Plugin, PluginExporter> activePlugins = registry.initialize(exporterState);
-        Logger.chatMessage(EnumChatFormatting.AQUA + "Active plugins:");
+        Log.chatMessage(EnumChatFormatting.AQUA + "Active plugins:");
         activePlugins.keySet().forEach(
-                plugin -> Logger.chatMessage("  " + EnumChatFormatting.YELLOW + plugin.getName()));
-        Logger.chatMessage(EnumChatFormatting.AQUA + "Exporting data...");
+                plugin -> Log.chatMessage("  " + EnumChatFormatting.YELLOW + plugin.getName()));
+        Log.chatMessage(EnumChatFormatting.AQUA + "Exporting data...");
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
 
@@ -213,13 +213,13 @@ public final class Exporter {
         registry.processPlugins();
         registry.postProcessPlugins();
 
-        Logger.chatMessage(EnumChatFormatting.AQUA + "Data exported!");
-        Logger.chatMessage(EnumChatFormatting.AQUA + "Committing database...");
+        Log.chatMessage(EnumChatFormatting.AQUA + "Data exported!");
+        Log.chatMessage(EnumChatFormatting.AQUA + "Committing database...");
         transaction.commit();
 
         // SHUTDOWNはHSQLDBコマンドなのでPostgreSQLでは実行しない
         if (!ConfigOptions.USE_POSTGRESQL.get()) {
-            Logger.chatMessage(EnumChatFormatting.AQUA + "Compacting database...");
+            Log.chatMessage(EnumChatFormatting.AQUA + "Compacting database...");
             entityManager.getTransaction().begin();
             entityManager.createNativeQuery("SHUTDOWN COMPACT").executeUpdate();
             // SHUTDOWNで全てクローズされるためトランザクションのコミットは不要
@@ -227,21 +227,21 @@ public final class Exporter {
 
         entityManager.close();
         entityManagerFactory.close();
-        Logger.chatMessage(EnumChatFormatting.AQUA + "Commit complete!");
+        Log.chatMessage(EnumChatFormatting.AQUA + "Commit complete!");
 
         if (renderingImages) {
-            Logger.chatMessage(EnumChatFormatting.AQUA + "Waiting for rendering to finish...");
-            Logger.MOD.info("Remaining render jobs: " + RenderDispatcher.INSTANCE.getJobCount());
+            Log.chatMessage(EnumChatFormatting.AQUA + "Waiting for rendering to finish...");
+            Log.MOD.info("Remaining render jobs: " + RenderDispatcher.INSTANCE.getJobCount());
             try {
                 RenderDispatcher.INSTANCE.waitUntilJobsComplete();
             } catch (InterruptedException wakeUp) {}
             RenderDispatcher.INSTANCE.setRendererState(RenderDispatcher.RendererState.DESTROYING);
-            Logger.chatMessage(EnumChatFormatting.AQUA + "Rendering complete!");
+            Log.chatMessage(EnumChatFormatting.AQUA + "Rendering complete!");
 
             try {
                 imageZipFileSystem.close();
             } catch (IOException e) {
-                Logger.chatMessage(
+                Log.chatMessage(
                         EnumChatFormatting.RED
                                 + String.format(
                                         "Caught exception trying to close image zip file:\n%s",
@@ -251,15 +251,15 @@ public final class Exporter {
         }
 
         // エラーログをクローズしてサマリーを報告
-        Logger.closeErrorLog();
-        if (Logger.getWarningCount() > 0 || Logger.getErrorCount() > 0) {
-            Logger.chatMessage(
+        Log.closeErrorLog();
+        if (Log.getWarningCount() > 0 || Log.getErrorCount() > 0) {
+            Log.chatMessage(
                     EnumChatFormatting.YELLOW
                             + String.format(
                                     "Export completed with %d warnings, %d errors. See export-errors.log",
-                                    Logger.getWarningCount(), Logger.getErrorCount()));
+                                    Log.getWarningCount(), Log.getErrorCount()));
         }
 
-        Logger.chatMessage(EnumChatFormatting.AQUA + "Export complete!");
+        Log.chatMessage(EnumChatFormatting.AQUA + "Export complete!");
     }
 }

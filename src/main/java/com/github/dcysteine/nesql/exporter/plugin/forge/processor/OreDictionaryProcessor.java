@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.plugin.forge.processor;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.github.dcysteine.nesql.exporter.plugin.PluginExporter;
 import com.github.dcysteine.nesql.exporter.plugin.PluginHelper;
 import com.github.dcysteine.nesql.exporter.plugin.forge.factory.OreDictionaryFactory;
@@ -31,7 +31,7 @@ public class OreDictionaryProcessor extends PluginHelper {
                     net.minecraftforge.oredict.OreDictionary.getOres(name, false);
             oreDictionaryFactory.get(name, itemStacks);
 
-            if (Logger.intermittentLog(count)) {
+            if (Log.intermittentLog(count)) {
                 logger.info("Processed ore dictionary entry {} of {}", count, total);
                 logger.info("Most recent entry: {}", name);
             }

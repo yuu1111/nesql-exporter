@@ -1,6 +1,6 @@
 package com.github.dcysteine.nesql.exporter.render;
 
-import com.github.dcysteine.nesql.exporter.main.Logger;
+import com.github.dcysteine.nesql.exporter.main.Log;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 import net.minecraft.util.EnumChatFormatting;
@@ -94,7 +94,7 @@ public enum RenderDispatcher {
 
         if ((newState == RendererState.UNINITIALIZED || newState == RendererState.INITIALIZING)
                 && !jobQueue.isEmpty()) {
-            Logger.chatMessage(String.format(
+            Log.chatMessage(String.format(
                     EnumChatFormatting.RED + "Render dispatcher has %s leftover jobs!"
                             + "\nClearing and transitioning to state %s.",
                     jobQueue.size(), newState.name()));
